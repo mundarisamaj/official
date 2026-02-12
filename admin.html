@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mundari Admin</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* --- 1. MOBILE FIRST STYLING --- */
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: #f4f6f8; 
+            margin: 0; 
+            display: flex; 
+            flex-direction: column; 
+            height: 100vh; 
+            overflow: hidden; 
+        }
+
+        /* Top Scrollable Menu */
+        .sidebar { 
+            width: 100%; 
+            background: #1e3b28; 
+            color: white; 
+            display: flex; 
+            flex-direction: row; 
+            align-items: center;
+            flex-shrink: 0; 
+            overflow-x: auto; 
+            white-space: nowrap;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+        .brand { display: none; }
+
+        .nav-items { display: flex; width: 100%; }
+
+        .nav-btn { 
+            flex: 1; 
+            min-width: 70px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
+            padding: 12px 5px; 
+            color: rgba(255,255,255,0.7); 
+            background: none; 
+            border: none; 
+            cursor: pointer; 
+            font-size: 0.75rem; 
+            border-bottom: 3px solid transparent; 
+        }
+        .nav-btn i { font-size: 1.5rem; margin-bottom: 4px; display: block; }
+        .nav-btn.active { background: rgba(0,0,0,0.2); color: white; border-bottom-color: #c5a059; }
+
+        /* Main Content Area */
+        .main { 
+            flex: 1; 
+            padding: 15px; 
+            overflow-y: auto; 
+            position: relative;
+            background: #f4f6f8;
+        }
+
+        .card { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 12px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
+            margin-bottom: 20px; 
+        }
+        
+        h3 { margin-top: 0; color: #1e3b28; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
+
+        input, textarea { 
+            width: 100%; 
+            padding: 12px; 
+            margin: 8px 0 15px; 
+            border: 1px solid #ddd; 
+            border-radius: 8px; 
+            font-family: inherit;
+            font-size: 16px; 
+        }
+        
+        .btn { 
+            width: 100%; 
+            padding: 14px; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            color: white; 
+            font-weight: 600; 
+            background: #1e3b28; 
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .list-item { 
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px; border-bottom: 1px solid #eee; background: #fff;
+        }
+        .list-item img { height: 50px; width: 50px; object-fit: cover; border-radius: 4px; margin-right: 10px; }
+        .item-info { flex: 1; font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; }
+        .btn-del { width: auto; background: #ff4d4d; padding: 6px 12px; font-size: 0.8rem; margin-left: 10px; color:white; border:none; border-radius:4px; cursor:pointer;}
+
+        /* --- DESKTOP STYLES (Only if screen is wide) --- */
+        @media (min-width: 900px) {
+            body { flex-direction: row; }
+            .sidebar { width: 280px; height: 100%; flex-direction: column; align-items: stretch; overflow-x: hidden; padding-top: 0; }
+            .brand { display: block; padding: 30px; font-size: 1.5rem; font-weight: bold; text-align: center; background: #152b1d; margin-bottom: 10px; }
+            .nav-items { flex-direction: column; width: 100%; }
+            .nav-btn { flex-direction: row; justify-content: flex-start; padding: 15px 30px; font-size: 1rem; border-bottom: none; border-left: 5px solid transparent; }
+            .nav-btn i { margin-right: 15px; margin-bottom: 0; font-size: 1.2rem; }
+            .nav-btn.active { border-left-color: #c5a059; border-bottom: none; background: rgba(255,255,255,0.1); }
+            .main { padding: 40px; }
+            .btn { width: auto; display: inline-block; margin-right: 10px; } 
+        }
+
+        .tab-content { display: none; } 
+        .tab-content.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="brand">Admin Panel</div>
+        <div class="nav-items">
+            <button class="nav-btn active" onclick="switchTab('hero')"><i class="material-icons">home</i>Hero</button>
+            <button class="nav-btn" onclick="switchTab('history')"><i class="material-icons">article</i>History</button>
+            <button class="nav-btn" onclick="switchTab('video')"><i class="material-icons">play_circle</i>Video</button>
+            <button class="nav-btn" onclick="switchTab('gallery')"><i class="material-icons">photo_library</i>Gallery</button>
+            <button class="nav-btn" onclick="switchTab('publish')" style="color:#c5a059;"><i class="material-icons">cloud_download</i>Publish</button>
+            <button class="nav-btn" onclick="logout()" style="color:#ffb3b3;"><i class="material-icons">logout</i>Exit</button>
+        </div>
+    </div>
+
+    <div class="main">
+        <div id="hero" class="tab-content active">
+            <div class="card">
+                <h3><i class="material-icons">edit</i> Edit Hero Text</h3>
+                <input type="text" id="hTitle" placeholder="Headline">
+                <input type="text" id="hDesc" placeholder="Sub-text">
+                <button class="btn" onclick="saveHeroText()">Save Text</button>
+            </div>
+            <div class="card">
+                <h3>Hero Images</h3>
+                <input type="text" id="newImg" placeholder="Image URL">
+                <button class="btn" onclick="addHeroImg()">+ Add Image</button>
+                <div id="heroList" style="margin-top:20px;"></div>
+            </div>
+        </div>
+
+        <div id="history" class="tab-content">
+            <div class="card">
+                <h3><i class="material-icons">post_add</i> New Article</h3>
+                <input type="text" id="ht" placeholder="Title">
+                <input type="text" id="hi" placeholder="Image URL">
+                <textarea id="hc" rows="5" placeholder="Article Content..."></textarea>
+                <button class="btn" onclick="addItem('history')">Publish</button>
+            </div>
+            <div class="card"><h3>Existing Articles</h3><div id="historyList"></div></div>
+        </div>
+
+        <div id="video" class="tab-content">
+            <div class="card">
+                <h3><i class="material-icons">video_library</i> Add Video</h3>
+                <input type="text" id="vt" placeholder="Title">
+                <input type="text" id="vl" placeholder="YouTube Link">
+                <button class="btn" onclick="addItem('video')">Add Video</button>
+            </div>
+            <div id="videoList" style="margin-top:20px;"></div>
+        </div>
+
+        <div id="gallery" class="tab-content">
+            <div class="card">
+                <h3><i class="material-icons">add_a_photo</i> Add Photo</h3>
+                <input type="text" id="gi" placeholder="Image URL">
+                <button class="btn" onclick="addItem('gallery')">Add Photo</button>
+            </div>
+            <div id="galleryList" style="margin-top:20px;"></div>
+        </div>
+
+        <div id="publish" class="tab-content">
+            <div class="card" style="text-align:center;">
+                <i class="material-icons" style="font-size: 3rem; color: #c5a059; margin-bottom: 10px;">folder_zip</i>
+                <h2 style="color:#1e3b28;">Download Database</h2>
+                <p style="color:#555; font-size:0.9rem; margin-bottom:20px;">
+                    Click below to save <b>data.js</b> to your device.
+                </p>
+                
+                <button class="btn" onclick="forceDownload()" style="background:#c5a059; font-size:1.1rem; padding:15px;">
+                    <i class="material-icons" style="vertical-align:middle;">download</i> Download data.js
+                </button>
+
+                <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
+
+                <p style="color:#888; font-size:0.8rem; margin-bottom:10px;">
+                    Download failed? Copy the code below manually:
+                </p>
+                <button class="btn" onclick="showCode()" style="background:#555; font-size:0.9rem;">Show Code to Copy</button>
+                <textarea id="codeBox" style="height:150px; font-family:monospace; font-size:12px; background:#f0f0f0; color:#333; display:none; margin-top:10px;" readonly></textarea>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        if (!sessionStorage.getItem('admin_session')) window.location.href = 'login.html';
+        function logout() { sessionStorage.removeItem('admin_session'); window.location.href = 'login.html'; }
+
+        function switchTab(id) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            
+            const btns = document.querySelectorAll('.nav-btn');
+            btns.forEach(btn => {
+                if(btn.onclick.toString().includes(id)) btn.classList.add('active');
+            });
+
+            if(id !== 'publish') renderAll();
+            if(id === 'hero') {
+                document.getElementById('hTitle').value = localStorage.getItem('mundari_hero_title') || '';
+                document.getElementById('hDesc').value = localStorage.getItem('mundari_hero_desc') || '';
+            }
+        }
+
+        function saveHeroText() { 
+            localStorage.setItem('mundari_hero_title', document.getElementById('hTitle').value); 
+            localStorage.setItem('mundari_hero_desc', document.getElementById('hDesc').value); 
+            alert("Saved!"); 
+        }
+
+        function addHeroImg() { 
+            let list = JSON.parse(localStorage.getItem('mundari_hero_images')) || []; 
+            const val = document.getElementById('newImg').value;
+            if(!val) return;
+            list.push(val); 
+            localStorage.setItem('mundari_hero_images', JSON.stringify(list)); 
+            document.getElementById('newImg').value = ''; renderAll(); 
+        }
+
+        function addItem(type) {
+            let item = { id: Date.now() };
+            if(type==='history') { 
+                item.title=document.getElementById('ht').value; 
+                item.thumb=document.getElementById('hi').value; 
+                item.fullContent=document.getElementById('hc').value;
+                if(!item.title) return alert("Title required");
+                document.getElementById('ht').value=''; document.getElementById('hi').value=''; document.getElementById('hc').value='';
+            }
+            if(type==='video') { 
+                item.title=document.getElementById('vt').value; 
+                item.link=document.getElementById('vl').value; 
+                if(!item.title) return alert("Title required");
+                document.getElementById('vt').value=''; document.getElementById('vl').value='';
+            }
+            if(type==='gallery') { 
+                item.url=document.getElementById('gi').value; 
+                if(!item.url) return alert("URL required");
+                document.getElementById('gi').value='';
+            }
+            let list = JSON.parse(localStorage.getItem(`mundari_${type}_list`)) || []; 
+            list.unshift(item);
+            localStorage.setItem(`mundari_${type}_list`, JSON.stringify(list)); 
+            renderAll();
+        }
+
+        function deleteItem(key, index) { 
+            if(!confirm("Delete this?")) return;
+            let list = JSON.parse(localStorage.getItem(key)); 
+            list.splice(index, 1); 
+            localStorage.setItem(key, JSON.stringify(list)); 
+            renderAll(); 
+        }
+
+        function renderAll() {
+            const heroList = JSON.parse(localStorage.getItem('mundari_hero_images')) || [];
+            const heroBox = document.getElementById('heroList');
+            if(heroBox) {
+                heroBox.innerHTML = '';
+                heroList.forEach((url, i) => {
+                    heroBox.innerHTML += `<div class="list-item"><div class="item-info"><img src="${url}"></div><button class="btn-del" onclick="deleteItem('mundari_hero_images', ${i})">Del</button></div>`;
+                });
+            }
+
+            const types = ['history_list', 'video_list', 'gallery_list'];
+            types.forEach(t => {
+                const list = JSON.parse(localStorage.getItem(`mundari_${t}`)) || [];
+                const box = document.getElementById(t.split('_')[0]+'List');
+                if(!box) return; 
+                box.innerHTML = '';
+                list.forEach((item, i) => {
+                    let preview = item.thumb || item.url || '';
+                    let imgTag = preview ? `<img src="${preview}">` : '';
+                    box.innerHTML += `<div class="list-item"><div class="item-info">${imgTag} ${item.title || 'Item'}</div><button class="btn-del" onclick="deleteItem('mundari_${t}', ${i})">Del</button></div>`;
+                });
+            });
+        }
+
+        // --- IMPROVED DOWNLOAD LOGIC ---
+        function generateDataString() {
+            let data = {};
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if(key && key.startsWith('mundari_')) {
+                    try { data[key] = JSON.parse(localStorage.getItem(key)); } catch(e){}
+                }
+            }
+            return "const MUNDARI_DB = " + JSON.stringify(data, null, 2) + ";";
+        }
+
+        function forceDownload() {
+            const str = generateDataString();
+            // Using 'application/octet-stream' forces the browser to treat it as a file download
+            const blob = new Blob([str], {type: "application/octet-stream"});
+            const url = window.URL.createObjectURL(blob);
+            
+            const a = document.createElement("a");
+            a.style.display = "none";
+            a.href = url;
+            a.download = "data.js"; // Standard filename
+            
+            document.body.appendChild(a);
+            a.click();
+            
+            // Cleanup
+            setTimeout(function() {
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            }, 100);
+            
+            alert("Download started... Check your Notification Bar.");
+        }
+
+        function showCode() {
+            const str = generateDataString();
+            const box = document.getElementById('codeBox');
+            box.style.display = 'block';
+            box.value = str;
+            box.select();
+        }
+
+        renderAll();
+        document.getElementById('hTitle').value = localStorage.getItem('mundari_hero_title') || '';
+        document.getElementById('hDesc').value = localStorage.getItem('mundari_hero_desc') || '';
+    </script>
+</body>
+</html>

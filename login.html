@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: #f4f6f8; 
+            margin: 0;
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .box { 
+            background: white; 
+            padding: 30px 25px; 
+            border-radius: 16px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
+            width: 100%; 
+            max-width: 380px; 
+            text-align: center; 
+        }
+        h2 {
+            margin-top: 0;
+            color: #1b3a2b;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+        /* --- FIX: Added background color and border to make inputs visible --- */
+        input { 
+            display: block; /* Ensures they sit on their own lines */
+            width: 100%; 
+            padding: 14px; 
+            margin-bottom: 15px; 
+            border: 1px solid #ccc; /* Darker border */
+            border-radius: 8px; 
+            box-sizing: border-box; 
+            font-size: 16px; 
+            background: #f0f2f5; /* Light grey background so it stands out */
+            color: #333; /* Dark text */
+            font-family: inherit;
+        }
+        input:focus {
+            outline: none;
+            border-color: #1b3a2b;
+            background: white;
+            box-shadow: 0 0 0 2px rgba(27, 58, 43, 0.1);
+        }
+        .btn { 
+            width: 100%; 
+            padding: 15px; 
+            background: #1b3a2b; 
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+        .btn:active { transform: scale(0.98); }
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            color: #888;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>Authority Login</h2>
+        <input type="email" id="email" placeholder="Authority Email">
+        <input type="password" id="pass" placeholder="Password">
+        <button class="btn" onclick="login()">Enter Panel</button>
+        <a href="index.html" class="back-link">← Back to Home</a>
+    </div>
+    <script>
+        function login() {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('pass').value;
+            const today = new Date();
+            const correctPass = String(today.getDate()).padStart(2, '0') + String(today.getMonth() + 1).padStart(2, '0') + today.getFullYear();
+            
+            if(email === "asisasastudent@gmail.com" && pass === correctPass) {
+                sessionStorage.setItem('admin_session', 'active');
+                localStorage.setItem('mundari_user', JSON.stringify({name:"Admin", type:"admin"}));
+                window.location.href = 'admin.html';
+            } else { alert("Wrong Credentials"); }
+        }
+    </script>
+</body>
+</html>
